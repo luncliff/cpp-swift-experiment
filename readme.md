@@ -1,8 +1,12 @@
 
 ### References
 
+* https://swift.org/package-manager/
+* https://developer.apple.com/documentation/swift_packages
 * https://github.com/apple/example-package-fisheryates
-* https://stackoverflow.com/a/62246008
+* https://github.com/microsoft/vcpkg/blob/master/docs/specifications/manifests.md
+* https://github.com/apple/swift-protobuf
+* https://developers.google.com/protocol-buffers/docs/reference/overview
 
 ## How To
 
@@ -41,7 +45,7 @@ Codegen uses `protoc` in vcpkg. CMakeLists.txt defines custom target `codegen` a
 #### Codegen: Mac
 
 ```bash
-mkdir build
+mkdir -p build && pushd build
     cmake .. -G Xcode \
         -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
         -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake \
@@ -58,7 +62,7 @@ popd
 Change `PLATFORM` and `DEPLOYMENT_TARGET` for iPhone build. See ios.toolchain.cmake for more details.
 
 ```bash
-mkdir build
+mkdir -p build && pushd build
     cmake .. -G Xcode \
         -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
         -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake \
@@ -88,3 +92,4 @@ After test, run Release build.
 swift build --configuration release
 ```
 
+For iPhone build, see https://stackoverflow.com/a/62246008. You may need to generate xcodeproj and edit it to finish build.
