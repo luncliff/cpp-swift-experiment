@@ -15,7 +15,7 @@ jobs:
     - name: run-vcpkg
       uses: lukka/run-vcpkg@v7.3
       with:
-        vcpkgArguments: install protobuf
+        vcpkgArguments: "protobuf protobuf:x64-osx"
         vcpkgDirectory: "/usr/local/share/vcpkg" # todo: use $VCPKG_INSTALLATION_ROOT
         vcpkgTriplet: "arm64-ios"
         vcpkgGitCommitId: e6dcc079c81161786eb7b052209a2047e79f2c6c
