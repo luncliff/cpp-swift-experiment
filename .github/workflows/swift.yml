@@ -13,12 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: run-vcpkg
+      uses: lukka/run-vcpkg@v7.3
       with:
         vcpkgArguments: install protobuf
         vcpkgDirectory: "/usr/local/share/vcpkg" # todo: use $VCPKG_INSTALLATION_ROOT
         vcpkgTriplet: "arm64-ios"
         cleanAfterBuild: true
     - name: run-cmake
+      uses: lukka/run-cmake@v3.4
       with:
         cmakeGenerator: "Xcode"
         buildDirectory: "build"
