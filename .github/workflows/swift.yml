@@ -1,0 +1,30 @@
+name: Swift
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: run-vcpkg
+      with:
+        vcpkgArguments: install protobuf
+        vcpkgDirectory: "/usr/local/share/vcpkg" # todo: use $VCPKG_INSTALLATION_ROOT
+        vcpkgTriplet: "arm64-ios"
+        cleanAfterBuild: true
+    - name: run-cmake
+      with:
+        cmakeGenerator: "Xcode"
+        buildDirectory: "build"
+        buildWithCMake: true
+        buildWithCMakeArgs: "--clean-first --info --target codegen"        
+    - name: Build
+      run: swift build -v
+    - name: Run tests
+      run: swift test -v
