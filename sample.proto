@@ -1,0 +1,23 @@
+  
+//
+// Design
+//  github.com/luncliff (luncliff@gmail.com)
+//
+// References
+//  - https://developers.google.com/protocol-buffers/docs/proto3
+//  - https://developers.google.com/protocol-buffers/docs/reference/overview
+//  - https://developers.google.com/protocol-buffers/docs/reference/cpp-generated
+//
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+option cc_enable_arenas = false;
+
+package v1;
+
+message Request {
+  bytes blob = 1;
+}
+
+message Response {
+  bytes blob = 1;
+}

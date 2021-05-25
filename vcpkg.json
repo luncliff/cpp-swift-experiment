@@ -1,0 +1,8 @@
+{
+    "name": "cpp-swift-example",
+    "version-string": "1.0.0",
+    "description": "Experiment project for Mac/iPhone library with C++/Swift Programming Language",
+    "dependencies": [
+        "protobuf"
+    ]
+}
