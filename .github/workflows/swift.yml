@@ -18,6 +18,7 @@ jobs:
         vcpkgArguments: install protobuf
         vcpkgDirectory: "/usr/local/share/vcpkg" # todo: use $VCPKG_INSTALLATION_ROOT
         vcpkgTriplet: "arm64-ios"
+        vcpkgGitCommitId: e6dcc079c81161786eb7b052209a2047e79f2c6c
         cleanAfterBuild: true
     - name: run-cmake
       uses: lukka/run-cmake@v3.4
