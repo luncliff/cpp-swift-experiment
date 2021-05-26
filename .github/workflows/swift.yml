@@ -27,7 +27,6 @@ jobs:
         cleanAfterBuild: true
     - uses: lukka/run-cmake@v3.4
       with:
-        cmakeAppendedArgs: "-G Xcode"
         useVcpkgToolchainFile: true
         buildDirectory: '${{ github.workspace }}/build'
         buildWithCMake: true
