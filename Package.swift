@@ -1,6 +1,8 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.4
 import PackageDescription
 
+// see https://github.com/microsoft/vcpkg/blob/master/docs/users/manifests.md
+// see .github/workflows/swift.yml
 let cachePath = "build/vcpkg_installed"
 let package = Package(
   name: "gloom",
@@ -19,6 +21,7 @@ let package = Package(
   targets: [
     .target(
       name: "gloom_pb", path: "",
+      exclude: ["DerivedData", cachePath, "build/CMakeFiles"],
       sources: [
         "build/sample.pb.cc",
         "build/sample.pb.h",
