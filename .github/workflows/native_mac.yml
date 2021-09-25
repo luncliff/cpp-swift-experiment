@@ -1,4 +1,4 @@
-name: "Build Check: Native"
+name: "Native: Mac"
 
 on:
   push:
@@ -9,6 +9,8 @@ on:
 jobs:
   build_debug:
     runs-on: macos-latest
+    env:
+      VCPKG_FEATURE_FLAGS: manifests,binarycaching
     steps:
       - uses: actions/checkout@v2
       - run: brew install swift-protobuf
@@ -29,6 +31,8 @@ jobs:
 
   build_release:
     runs-on: macos-latest
+    env:
+      VCPKG_FEATURE_FLAGS: manifests,binarycaching
     steps:
       - uses: actions/checkout@v2
       - run: brew install swift-protobuf

@@ -33,9 +33,11 @@ jobs:
           buildDirectory: "${{ github.workspace }}/build"
           buildWithCMake: true
           buildWithCMakeArgs: "--target codegen"
+      - name: "Build SwiftProtobuf"
+        run: swift build --target SwiftProtobuf
       - name: "Swift Build"
-        run: swift build -v
+        run: swift build --verbose --target Gloom
       - name: "Swift Test"
-        run: swift test -v
+        run: swift test --verbose
       - name: "Swift Build(Release)"
-        run: swift build -v --configuration release
+        run: swift build --configuration release
