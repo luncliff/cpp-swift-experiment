@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.17)
-project(gloom LANGUAGES CXX VERSION 1.0.0)
+project(sample LANGUAGES CXX VERSION 1.0.0)
 if(APPLE)
+    set(CMAKE_Swift_LANGUAGE_VERSION 5.3)
     enable_language(Swift)
-    set(CMAKE_Swift_LANGUAGE_VERSION 5.4)
 endif()
 
 if(CMAKE_TOOLCHAIN_FILE MATCHES vcpkg.cmake)
@@ -40,28 +40,28 @@ else()
     add_dependencies(codegen codegen_swift)
 endif()
 
-add_library(gloom_pb
+add_library(sample
     sample.pb.h
     sample.pb.cc
 )
-add_dependencies(gloom_pb codegen_cpp)
+add_dependencies(sample codegen_cpp)
 
 list(APPEND headers ${CMAKE_CURRENT_BINARY_DIR}/sample.pb.h)
 
-set_target_properties(gloom_pb
+set_target_properties(sample
 PROPERTIES
     CXX_STANDARD 17
     PUBLIC_HEADER "${headers}"
     XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY  "1,2"
 )
 
-target_link_libraries(gloom_pb
+target_link_libraries(sample
 PUBLIC
     protobuf::libprotobuf-lite # protobuf::libprotobuf
 )
 
 if(APPLE)
-    target_link_libraries(gloom_pb
+    target_link_libraries(sample
     PRIVATE
         "-framework Metal"
     )
@@ -72,7 +72,7 @@ include(GNUInstallDirs)
 install(FILES sample.proto
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
-install(TARGETS gloom_pb
+install(TARGETS sample
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

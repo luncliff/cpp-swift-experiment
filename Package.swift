@@ -1,6 +1,8 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.3
 import PackageDescription
 
+// see https://github.com/microsoft/vcpkg/blob/master/docs/users/manifests.md
+// see .github/workflows/swift.yml
 let cachePath = "build/vcpkg_installed"
 let package = Package(
   name: "gloom",
@@ -8,7 +10,7 @@ let package = Package(
     .macOS("11.0"), .iOS("12.3"),
   ],
   products: [
-    .library(name: "gloom_pb", type: .dynamic, targets: ["gloom_pb"]),
+    .library(name: "ssss", type: .dynamic, targets: ["gloom_pb"]),
     .library(name: "Gloom", type: .dynamic, targets: ["Gloom"]),
   ],
   dependencies: [
@@ -19,6 +21,7 @@ let package = Package(
   targets: [
     .target(
       name: "gloom_pb", path: "",
+      exclude: ["DerivedData", cachePath, "build/CMakeFiles"],
       sources: [
         "build/sample.pb.cc",
         "build/sample.pb.h",

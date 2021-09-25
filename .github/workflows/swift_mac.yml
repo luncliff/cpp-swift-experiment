@@ -1,0 +1,43 @@
+#
+# References
+#  - https://github.com/lukka/CppBuildTasks-Validation/tree/master/.github/workflows
+#  - https://roseline.oopy.io/dev/github-action-cahce
+#
+name: "Swift: Mac"
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  build_and_test:
+    runs-on: macos-latest
+    env:
+      VCPKG_FEATURE_FLAGS: manifests,binarycaching
+    steps:
+      - uses: actions/checkout@v2
+      - run: brew install swift-protobuf
+      - uses: lukka/run-vcpkg@v7.3
+        with:
+          vcpkgArguments: "protobuf:x64-osx protobuf:arm64-osx"
+          vcpkgDirectory: "/usr/local/share/vcpkg" # todo: use $VCPKG_INSTALLATION_ROOT
+          vcpkgTriplet: "x64-osx"
+          vcpkgGitCommitId: e6dcc079c81161786eb7b052209a2047e79f2c6c
+          cleanAfterBuild: true
+      - uses: lukka/run-cmake@v3.4
+        with:
+          useVcpkgToolchainFile: true
+          cmakeBuildType: "Release"
+          buildDirectory: "${{ github.workspace }}/build"
+          buildWithCMake: true
+          buildWithCMakeArgs: "--target codegen"
+      - name: "Build SwiftProtobuf"
+        run: swift build --target SwiftProtobuf
+      - name: "Swift Build"
+        run: swift build --verbose --target Gloom
+      - name: "Swift Test"
+        run: swift test --verbose
+      - name: "Swift Build(Release)"
+        run: swift build --configuration release
