@@ -1,4 +1,4 @@
-// swift-tools-version:5.4
+// swift-tools-version:5.3
 import PackageDescription
 
 // see https://github.com/microsoft/vcpkg/blob/master/docs/users/manifests.md

@@ -12,10 +12,8 @@ on:
     branches: ["**"]
 
 jobs:
-  build_debug:
+  build_native_only:
     runs-on: macos-latest
-    env:
-      VCPKG_FEATURE_FLAGS: manifests,binarycaching
     steps:
       - uses: actions/checkout@v2
       - run: brew install swift-protobuf
@@ -32,14 +30,16 @@ jobs:
           cmakeBuildType: "Debug"
           buildDirectory: "${{ github.workspace }}/build"
           buildWithCMake: true
-          buildWithCMakeArgs: "--clean-first --target codegen"
-      - name: "Swift Build"
-        run: swift build -v
-      - name: "Swift Test"
-        run: swift test -v
-      - name: "Swift Build"
-        run: swift build -v --configuration debug
-  build_release:
+          buildWithCMakeArgs: "--target codegen sample"
+      - uses: lukka/run-cmake@v3.4
+        with:
+          useVcpkgToolchainFile: true
+          cmakeBuildType: "Release"
+          buildDirectory: "${{ github.workspace }}/build"
+          buildWithCMake: true
+          buildWithCMakeArgs: "--target codegen sample --clean-first"
+
+  build_swift:
     runs-on: macos-latest
     env:
       VCPKG_FEATURE_FLAGS: manifests,binarycaching
@@ -59,7 +59,7 @@ jobs:
           cmakeBuildType: "Release"
           buildDirectory: "${{ github.workspace }}/build"
           buildWithCMake: true
-          buildWithCMakeArgs: "--clean-first --target codegen"
+          buildWithCMakeArgs: "--target codegen"
       - name: "Swift Build"
         run: swift build -v
       - name: "Swift Test"

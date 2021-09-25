@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(sample LANGUAGES CXX VERSION 1.0.0)
 if(APPLE)
-    set(CMAKE_Swift_LANGUAGE_VERSION 5.4)
+    set(CMAKE_Swift_LANGUAGE_VERSION 5.3)
     enable_language(Swift)
 endif()
 
