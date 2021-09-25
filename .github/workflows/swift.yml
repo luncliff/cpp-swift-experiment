@@ -32,7 +32,7 @@ jobs:
           cmakeBuildType: "Debug"
           buildDirectory: "${{ github.workspace }}/build"
           buildWithCMake: true
-          buildWithCMakeArgs: "--clean-first --info --target codegen"
+          buildWithCMakeArgs: "--clean-first --debug-output --target codegen"
       - name: "Swift Build"
         run: swift build -v
       - name: "Swift Test"
@@ -59,7 +59,7 @@ jobs:
           cmakeBuildType: "Release"
           buildDirectory: "${{ github.workspace }}/build"
           buildWithCMake: true
-          buildWithCMakeArgs: "--clean-first --info --target codegen"
+          buildWithCMakeArgs: "--clean-first --debug-output --target codegen"
       - name: "Swift Build"
         run: swift build -v
       - name: "Swift Test"
