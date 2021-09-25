@@ -10,7 +10,7 @@ let package = Package(
     .macOS("11.0"), .iOS("12.3"),
   ],
   products: [
-    .library(name: "gloom_pb", type: .dynamic, targets: ["gloom_pb"]),
+    .library(name: "ssss", type: .dynamic, targets: ["gloom_pb"]),
     .library(name: "Gloom", type: .dynamic, targets: ["Gloom"]),
   ],
   dependencies: [
