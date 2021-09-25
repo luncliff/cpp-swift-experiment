@@ -18,9 +18,7 @@ jobs:
       VCPKG_FEATURE_FLAGS: manifests,binarycaching
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/github-script@v5.0.0
-        with:
-          script: brew install swift-protobuf
+      - run: brew install swift-protobuf
       - uses: lukka/run-vcpkg@v7.3
         with:
           vcpkgArguments: "protobuf:x64-osx protobuf:arm64-osx"
@@ -47,9 +45,7 @@ jobs:
       VCPKG_FEATURE_FLAGS: manifests,binarycaching
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/github-script@v5.0.0
-        with:
-          script: brew install swift-protobuf
+      - run: brew install swift-protobuf
       - uses: lukka/run-vcpkg@v7.3
         with:
           vcpkgArguments: "protobuf:x64-osx protobuf:arm64-osx"
