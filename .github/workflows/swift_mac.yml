@@ -36,7 +36,7 @@ jobs:
       - name: "Build SwiftProtobuf"
         run: swift build --target SwiftProtobuf
       - name: "Swift Build"
-        run: swift build --verbose --target Gloom
+        run: swift build --verbose --target scone
       - name: "Swift Test"
         run: swift test --verbose
       - name: "Swift Build(Release)"

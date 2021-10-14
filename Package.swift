@@ -33,6 +33,7 @@ let package = Package(
         "Sources/sample.pb.swift"
       ],
       sources: [
+        "Sources/binding.cpp",
         "Sources/sample.pb.cc",
         "Sources/sample.pb.h",
       ],
@@ -42,10 +43,14 @@ let package = Package(
         .headerSearchPath("\(vcpkgInstalledPath)/x64-osx/include", .when(platforms: [.macOS])),
         .headerSearchPath("\(vcpkgInstalledPath)/arm64-osx/include", .when(platforms: [.iOS])),
         .define("_DEBUG", to: "1", .when(configuration: .debug)),
+        .unsafeFlags(["-stdlib=libc++"]),
+        .unsafeFlags(["-fcoroutines-ts"]),
       ],
       linkerSettings: [
         .linkedLibrary("protobuf-lited", .when(configuration: .debug)),
         .linkedLibrary("protobuf-lite", .when(configuration: .release)),
+        // .linkedLibrary("fmtd", .when(configuration: .debug)),
+        // .linkedLibrary("fmt", .when(configuration: .release)),
         .unsafeFlags(["-L\(vcpkgInstalledPath)/x64-osx/debug/lib"], .when(platforms: [.macOS], configuration: .debug)),
         .unsafeFlags(["-L\(vcpkgInstalledPath)/x64-osx/lib"], .when(platforms: [.macOS], configuration: .release)),
         .unsafeFlags(["-L\(vcpkgInstalledPath)/arm64-ios/debug/lib"], .when(platforms: [.iOS], configuration: .debug)),

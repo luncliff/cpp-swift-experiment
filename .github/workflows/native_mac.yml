@@ -27,7 +27,7 @@ jobs:
           cmakeBuildType: "Debug"
           buildDirectory: "${{ github.workspace }}/build"
           buildWithCMake: true
-          buildWithCMakeArgs: "--config Debug --target codegen sample"
+          buildWithCMakeArgs: "--config Debug --target codegen scone_native"
 
   build_release:
     runs-on: macos-latest
@@ -49,4 +49,4 @@ jobs:
           cmakeBuildType: "Release"
           buildDirectory: "${{ github.workspace }}/build"
           buildWithCMake: true
-          buildWithCMakeArgs: "--config Release --target codegen sample"
+          buildWithCMakeArgs: "--config Release --target codegen scone_native"

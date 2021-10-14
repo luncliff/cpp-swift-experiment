@@ -9,6 +9,8 @@ if(CMAKE_TOOLCHAIN_FILE MATCHES vcpkg.cmake)
     message(STATUS "Using vcpkg: ${VCPKG_TARGET_TRIPLET}")
 endif()
 find_package(Protobuf 3.10 CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
 find_program(protoc_path NAMES protoc REQUIRED)
 message(STATUS "Using protoc: ${protoc_path}")
@@ -47,6 +49,7 @@ list(APPEND headers
 add_library(scone_native
     ${headers}
     ${PROJECT_SOURCE_DIR}/Sources/sample.pb.cc
+    Sources/binding.cpp
 )
 add_dependencies(scone_native codegen_cpp)
 
@@ -57,9 +60,15 @@ PROPERTIES
     XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY  "1,2"
 )
 
+target_compile_options(scone_native
+PRIVATE
+    -stdlib=libc++ -fcoroutines-ts
+)
+
 target_link_libraries(scone_native
 PUBLIC
     protobuf::libprotobuf-lite # protobuf::libprotobuf
+    fmt::fmt-header-only spdlog::spdlog_header_only
 )
 
 if(APPLE)
