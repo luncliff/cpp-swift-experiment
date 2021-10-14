@@ -1,1 +1,3 @@
 *.pb.swift
+*.pb.h
+*.pb.cc

@@ -1,17 +1,24 @@
 // swift-tools-version:5.3
 import PackageDescription
+import Foundation
+
+// in Xcode, this is '/'
+let workspace = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+// let vcpkgInstalledURL = workspace.appendingPathComponent("build").appendingPathComponent("vcpkg_installed")
 
 // see https://github.com/microsoft/vcpkg/blob/master/docs/users/manifests.md
 // see .github/workflows/swift.yml
-let cachePath = "build/vcpkg_installed"
+let vcpkgInstalledPath = "build/vcpkg_installed"
+
 let package = Package(
-  name: "gloom",
+  name: "scone",
   platforms: [
-    .macOS("11.0"), .iOS("12.3"),
+    // see https://developer.apple.com/documentation/swift_packages/supportedplatform/
+    .macOS("11.0"), .iOS("13.0"), // macCatalyst("13.0"),
   ],
   products: [
-    .library(name: "ssss", type: .dynamic, targets: ["gloom_pb"]),
-    .library(name: "Gloom", type: .dynamic, targets: ["Gloom"]),
+    .library(name: "scone_native", type: .dynamic, targets: ["scone_native"]),
+    .library(name: "scone", type: .dynamic, targets: ["scone"]),
   ],
   dependencies: [
     .package(
@@ -20,38 +27,40 @@ let package = Package(
   ],
   targets: [
     .target(
-      name: "gloom_pb", path: "",
-      exclude: ["DerivedData", cachePath, "build/CMakeFiles"],
-      sources: [
-        "build/sample.pb.cc",
-        "build/sample.pb.h",
+      name: "scone_native", path: "",
+      exclude: [
+        "DerivedData", "build", "Tests",
+        "Sources/sample.pb.swift"
       ],
-      publicHeadersPath: "build",
+      sources: [
+        "Sources/sample.pb.cc",
+        "Sources/sample.pb.h",
+      ],
+      publicHeadersPath: "Sources",
       cxxSettings: [
-        .headerSearchPath("\(cachePath)/x64-osx/include", .when(platforms: [.macOS])),
+        // todo: macCatalyst
+        .headerSearchPath("\(vcpkgInstalledPath)/x64-osx/include", .when(platforms: [.macOS])),
+        .headerSearchPath("\(vcpkgInstalledPath)/arm64-osx/include", .when(platforms: [.iOS])),
         .define("_DEBUG", to: "1", .when(configuration: .debug)),
       ],
       linkerSettings: [
         .linkedLibrary("protobuf-lited", .when(configuration: .debug)),
         .linkedLibrary("protobuf-lite", .when(configuration: .release)),
-        .unsafeFlags(
-          ["-L\(cachePath)/x64-osx/debug/lib"],
-          .when(platforms: [.macOS], configuration: .debug)),
-        .unsafeFlags(
-          ["-L\(cachePath)/arm64-ios/debug/lib"],
-          .when(platforms: [.iOS], configuration: .debug)),
-        .unsafeFlags(
-          ["-L\(cachePath)/x64-osx/lib"],
-          .when(platforms: [.macOS], configuration: .release)),
-        .unsafeFlags(
-          ["-L\(cachePath)/arm64-ios/lib"],
-          .when(platforms: [.iOS], configuration: .release)),
+        .unsafeFlags(["-L\(vcpkgInstalledPath)/x64-osx/debug/lib"], .when(platforms: [.macOS], configuration: .debug)),
+        .unsafeFlags(["-L\(vcpkgInstalledPath)/x64-osx/lib"], .when(platforms: [.macOS], configuration: .release)),
+        .unsafeFlags(["-L\(vcpkgInstalledPath)/arm64-ios/debug/lib"], .when(platforms: [.iOS], configuration: .debug)),
+        .unsafeFlags(["-L\(vcpkgInstalledPath)/arm64-ios/lib"], .when(platforms: [.iOS], configuration: .release)),
       ]
     ),
     .target(
-      name: "Gloom", dependencies: ["SwiftProtobuf"], path: "",
+      name: "scone", dependencies: ["SwiftProtobuf"], path: "Sources",
+      exclude: [
+        // "DerivedData", 
+        "sample.pb.h",
+        "sample.pb.cc"
+      ],
       sources: [
-        "Sources/sample.pb.swift",
+        "sample.pb.swift",
       ],
       swiftSettings: [
         .define("_DEBUG", .when(configuration: .debug))
@@ -61,7 +70,7 @@ let package = Package(
       ]
     ),
     .testTarget(
-      name: "GloomTests", dependencies: ["Gloom", "gloom_pb"], path: "Tests"
+      name: "sconeTests", dependencies: ["scone", "scone_native"], path: "Tests"
     ),
   ],
   swiftLanguageVersions: [SwiftVersion.v5],

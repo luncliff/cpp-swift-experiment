@@ -18,10 +18,10 @@ add_custom_target(codegen
 )
 
 add_custom_target(codegen_cpp
-    COMMAND ${protoc_path} sample.proto --cpp_out=${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${protoc_path} sample.proto --cpp_out=${PROJECT_SOURCE_DIR}/Sources
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-    BYPRODUCTS  sample.pb.h
-                sample.pb.cc
+    BYPRODUCTS  ${PROJECT_SOURCE_DIR}/Sources/sample.pb.h
+                ${PROJECT_SOURCE_DIR}/Sources/sample.pb.cc
 )
 add_dependencies(codegen codegen_cpp)
 
@@ -40,28 +40,30 @@ else()
     add_dependencies(codegen codegen_swift)
 endif()
 
-add_library(sample
-    sample.pb.h
-    sample.pb.cc
+list(APPEND headers
+    ${PROJECT_SOURCE_DIR}/Sources/sample.pb.h
 )
-add_dependencies(sample codegen_cpp)
 
-list(APPEND headers ${CMAKE_CURRENT_BINARY_DIR}/sample.pb.h)
+add_library(scone_native
+    ${headers}
+    ${PROJECT_SOURCE_DIR}/Sources/sample.pb.cc
+)
+add_dependencies(scone_native codegen_cpp)
 
-set_target_properties(sample
+set_target_properties(scone_native
 PROPERTIES
     CXX_STANDARD 17
     PUBLIC_HEADER "${headers}"
     XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY  "1,2"
 )
 
-target_link_libraries(sample
+target_link_libraries(scone_native
 PUBLIC
     protobuf::libprotobuf-lite # protobuf::libprotobuf
 )
 
 if(APPLE)
-    target_link_libraries(sample
+    target_link_libraries(scone_native
     PRIVATE
         "-framework Metal"
     )
@@ -72,7 +74,7 @@ include(GNUInstallDirs)
 install(FILES sample.proto
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
-install(TARGETS sample
+install(TARGETS scone_native
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

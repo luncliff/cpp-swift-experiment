@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import Gloom
+@testable import scone
 
 class TestCase2: XCTestCase {
     override func setUp() {
@@ -9,11 +9,11 @@ class TestCase2: XCTestCase {
     }
 
     func test1() {
-      let req = Gloom.V1_Request()
+      let req = scone.V1_Request()
       XCTAssertTrue(req.blob.isEmpty)
     }
     func test2() {
-      let res = Gloom.V1_Response()
+      let res = scone.V1_Response()
       XCTAssertTrue(res.blob.isEmpty)
     }
     
