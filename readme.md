@@ -1,4 +1,7 @@
 
+[![Native: Mac](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/native_mac.yml/badge.svg)](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/native_mac.yml)
+[![Swift: Mac](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/swift_mac.yml/badge.svg)](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/swift_mac.yml)
+
 ### References
 
 * https://swift.org/package-manager/
@@ -49,7 +52,7 @@ brew install swift-protobuf
 Codegen uses `protoc` in the vcpkg. Currently CMakeLists.txt defines 2 targets.
 
 1. custom target `codegen`
-2. library target `sample`
+2. library target `scone_native`
 
 #### Codegen: Mac
 
