@@ -41,7 +41,7 @@ jobs:
           vcpkgArguments: "protobuf:x64-osx protobuf:arm64-osx"
           vcpkgDirectory: "/usr/local/share/vcpkg" # todo: use $VCPKG_INSTALLATION_ROOT
           vcpkgTriplet: "x64-osx"
-          vcpkgGitCommitId: e6dcc079c81161786eb7b052209a2047e79f2c6c
+          vcpkgGitCommitId: 1085a57da0725c19e19586025438e8c16f34c890 # 2022.01.01
           cleanAfterBuild: true
       - uses: lukka/run-cmake@v3.4
         with:
@@ -49,4 +49,4 @@ jobs:
           cmakeBuildType: "Release"
           buildDirectory: "${{ github.workspace }}/build"
           buildWithCMake: true
-          buildWithCMakeArgs: "--config Release --target codegen scone_native"
+          buildWithCMakeArgs: "--config Release --target codegen"

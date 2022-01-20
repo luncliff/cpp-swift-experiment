@@ -4,12 +4,24 @@
 
 ### References
 
-* https://swift.org/package-manager/
-* https://developer.apple.com/documentation/swift_packages
-* https://github.com/apple/example-package-fisheryates
-* https://github.com/microsoft/vcpkg/blob/master/docs/specifications/manifests.md
+#### Swift
+
+* Swift 5.3+
+    * https://docs.swift.org/swift-book/LanguageGuide/TheBasics.html
+* Swift Package Manager
+    * https://swift.org/package-manager/
+    * https://docs.swift.org/package-manager/PackageDescription/PackageDescription.html
+    * https://developer.apple.com/documentation/swift_packages
+    * https://github.com/apple/example-package-fisheryates
+
+#### Protocol Buffers
+
 * https://github.com/apple/swift-protobuf
 * https://developers.google.com/protocol-buffers/docs/reference/overview
+
+#### Vcpkg
+
+* https://github.com/microsoft/vcpkg/blob/master/docs/specifications/manifests.md
 
 ## How To
 
