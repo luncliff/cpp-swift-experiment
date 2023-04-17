@@ -1,84 +1,97 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.5
 import PackageDescription
-import Foundation
-
-// in Xcode, this is '/'
-let workspace = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-// let vcpkgInstalledURL = workspace.appendingPathComponent("build").appendingPathComponent("vcpkg_installed")
-
-// see https://github.com/microsoft/vcpkg/blob/master/docs/users/manifests.md
-// see .github/workflows/swift.yml
-let vcpkgInstalledPath = "build/vcpkg_installed"
 
 let package = Package(
-  name: "scone",
-  platforms: [
-    // see https://developer.apple.com/documentation/swift_packages/supportedplatform/
-    .macOS("11.0"), .iOS("13.0"), // macCatalyst("13.0"),
-  ],
+  name: "bridging",
   products: [
-    .library(name: "scone_native", type: .dynamic, targets: ["scone_native"]),
-    .library(name: "scone", type: .dynamic, targets: ["scone"]),
-  ],
-  dependencies: [
-    .package(
-      name: "SwiftProtobuf", url: "https://github.com/apple/swift-protobuf.git",
-      .exact("1.16.0"))
+    .library(name: "baguette_static", type: .static, targets: ["baguette-target"]),
+    .library(name: "baguette", type: .dynamic, targets: ["baguette-target"]),
+    .executable(name: "baguette_test", targets: ["baguette_test"])
   ],
   targets: [
     .target(
-      name: "scone_native", path: "",
-      exclude: [
-        "DerivedData", "build", "Tests",
-        "Sources/sample.pb.swift"
-      ],
+      name: "baguette-target",
+      path: "src",
       sources: [
-        "Sources/binding.cpp",
-        "Sources/sample.pb.cc",
-        "Sources/sample.pb.h",
+        "bridge_apple.cpp",
+        "bridge.hpp",
+        "swift_crypto.hpp",
+        "swift_crypto.cpp",
+        "swift_decoder.hpp",
+        "swift_decoder.cpp",
+        "swift_hostinfo.hpp",
+        "swift_hostinfo.cpp"
       ],
-      publicHeadersPath: "Sources",
+      publicHeadersPath: ".",
       cxxSettings: [
-        // todo: macCatalyst
-        .headerSearchPath("\(vcpkgInstalledPath)/x64-osx/include", .when(platforms: [.macOS])),
-        .headerSearchPath("\(vcpkgInstalledPath)/arm64-osx/include", .when(platforms: [.iOS])),
+        .headerSearchPath("../externals/metal-cpp"),
         .define("_DEBUG", to: "1", .when(configuration: .debug)),
-        .unsafeFlags(["-stdlib=libc++"]),
-        .unsafeFlags(["-fcoroutines-ts"]),
+        .define("USING_SWIFTPM")
       ],
       linkerSettings: [
-        .linkedLibrary("protobuf-lited", .when(configuration: .debug)),
-        .linkedLibrary("protobuf-lite", .when(configuration: .release)),
-        // .linkedLibrary("fmtd", .when(configuration: .debug)),
-        // .linkedLibrary("fmt", .when(configuration: .release)),
-        .unsafeFlags(["-L\(vcpkgInstalledPath)/x64-osx/debug/lib"], .when(platforms: [.macOS], configuration: .debug)),
-        .unsafeFlags(["-L\(vcpkgInstalledPath)/x64-osx/lib"], .when(platforms: [.macOS], configuration: .release)),
-        .unsafeFlags(["-L\(vcpkgInstalledPath)/arm64-ios/debug/lib"], .when(platforms: [.iOS], configuration: .debug)),
-        .unsafeFlags(["-L\(vcpkgInstalledPath)/arm64-ios/lib"], .when(platforms: [.iOS], configuration: .release)),
+        .linkedLibrary("boringssl"),
+        .linkedFramework("Foundation")
       ]
     ),
     .target(
-      name: "scone", dependencies: ["SwiftProtobuf"], path: "Sources",
-      exclude: [
-        // "DerivedData", 
-        "sample.pb.h",
-        "sample.pb.cc"
+      name: "BaguetteBridge",
+      dependencies: [
+        .target(name: "baguette-target") // "baguette-target",
       ],
-      sources: [
-        "sample.pb.swift",
-      ],
+      path: "platform-apple",
       swiftSettings: [
-        .define("_DEBUG", .when(configuration: .debug))
+        .define("USING_SWIFTPM")
       ],
       linkerSettings: [
-        .linkedFramework("Metal")  // for C++ based framework
+        .linkedLibrary("boringssl"),
+        .linkedFramework("Foundation")
       ]
     ),
     .testTarget(
-      name: "sconeTests", dependencies: ["scone", "scone_native"], path: "Tests"
+      name: "BaguetteBridgeTests",
+      dependencies: [
+        "baguette-target",
+        "BaguetteBridge"
+      ],
+      path: "test",
+      exclude: [
+        "baguette_test.cpp"
+      ],
+      sources: [
+        "TestCase1.swift"
+      ],
+      swiftSettings: [
+        .define("USING_SWIFTPM")
+      ],
+      linkerSettings: [
+        .linkedFramework("XCTest", .when(platforms: [.iOS, .macOS, .macCatalyst])),
+        .linkedFramework("Foundation")
+      ]
     ),
+    .executableTarget(
+      name: "baguette_test",
+      dependencies: [
+        "baguette-target",
+        "BaguetteBridge"
+      ],
+      path: "test",
+      exclude: [
+        "TestCase1.swift"
+      ],
+      sources: [
+        "baguette_test.cpp"
+      ],
+      cxxSettings: [
+        .headerSearchPath("../externals/metal-cpp"),
+        .define("_DEBUG", to: "1", .when(configuration: .debug)),
+        .define("USING_SWIFTPM")
+      ],
+      linkerSettings: [
+        .linkedFramework("Foundation")
+      ]
+    )
   ],
   swiftLanguageVersions: [SwiftVersion.v5],
-  cLanguageStandard: CLanguageStandard.c11,
-  cxxLanguageStandard: CXXLanguageStandard.cxx1z
+  cLanguageStandard: CLanguageStandard.c18,
+  cxxLanguageStandard: CXXLanguageStandard.cxx20
 )

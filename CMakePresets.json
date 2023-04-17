@@ -1,0 +1,75 @@
+{
+    "version": 5,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 25,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "x64-osx",
+            "displayName": "x64-osx",
+            "generator": "Xcode",
+            "binaryDir": "${sourceDir}/build-x64-osx",
+            "installDir": "${sourceDir}/install",
+            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+            "cacheVariables": {
+                "BUILD_SHARED_LIBS": false,
+                "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "12.0",
+                "CMAKE_OSX_ARCHITECTURES": "x86_64",
+                "VCPKG_TARGET_TRIPLET": "x64-osx"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            }
+        },
+        {
+            "name": "arm64-ios",
+            "displayName": "arm64-ios",
+            "generator": "Xcode",
+            "binaryDir": "${sourceDir}/build-arm64-ios",
+            "installDir": "${sourceDir}/install",
+            "cacheVariables": {
+                "BUILD_SHARED_LIBS": false,
+                "CMAKE_SYSTEM_NAME": "iOS",
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "11.0",
+                "CMAKE_CROSSCOMPILING": true
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "x64-osx-debug",
+            "configurePreset": "x64-osx",
+            "configuration": "Debug"
+        },
+        {
+            "name": "arm64-ios-debug",
+            "configurePreset": "arm64-ios",
+            "configuration": "Debug"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "x64-osx-debug",
+            "configurePreset": "x64-osx",
+            "configuration": "Debug",
+            "output": {
+                "outputOnFailure": true,
+                "verbosity": "verbose"
+            },
+            "execution": {
+                "noTestsAction": "error",
+                "stopOnFailure": false
+            }
+        }
+    ]
+}

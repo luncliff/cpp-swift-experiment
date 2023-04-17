@@ -1,5 +1,13 @@
 Package.resolved
 .swiftpm
+.vscode
+.build
+
+build-*
+externals
+install
+
+*.zip
 
 # Created by https://www.toptal.com/developers/gitignore/api/swift,swiftpackagemanager,swiftpm,xcode,cmake,c++,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=swift,swiftpackagemanager,swiftpm,xcode,cmake,c++,macos

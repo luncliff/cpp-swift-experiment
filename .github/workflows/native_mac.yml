@@ -7,46 +7,24 @@ on:
     branches: ["**"]
 
 jobs:
-  build_debug:
+  native_debug:
     runs-on: macos-latest
     env:
       VCPKG_FEATURE_FLAGS: manifests,binarycaching
     steps:
       - uses: actions/checkout@v2
-      - run: brew install swift-protobuf
-      - uses: lukka/run-vcpkg@v7.3
+      - run: brew install cmake
+      - name: "Setup Metal-cpp"
+        run: |
+          pwsh setup-metal-cpp.ps1
+      - uses: lukka/run-vcpkg@v11
         with:
-          vcpkgArguments: "protobuf:x64-osx protobuf:arm64-osx"
           vcpkgDirectory: "/usr/local/share/vcpkg" # todo: use $VCPKG_INSTALLATION_ROOT
-          vcpkgTriplet: "x64-osx"
-          vcpkgGitCommitId: e6dcc079c81161786eb7b052209a2047e79f2c6c
-          cleanAfterBuild: true
-      - uses: lukka/run-cmake@v3.4
+          vcpkgGitCommitId: dafff8267e0685baa86140e5a5dcf4d9d7383592
+          vcpkgJsonGlob: "${{ github.workspace }}/vcpkg.json"
+          runVcpkgInstall: true
+      - uses: lukka/run-cmake@v10
         with:
-          useVcpkgToolchainFile: true
-          cmakeBuildType: "Debug"
-          buildDirectory: "${{ github.workspace }}/build"
-          buildWithCMake: true
-          buildWithCMakeArgs: "--config Debug --target codegen scone_native"
-
-  build_release:
-    runs-on: macos-latest
-    env:
-      VCPKG_FEATURE_FLAGS: manifests,binarycaching
-    steps:
-      - uses: actions/checkout@v2
-      - run: brew install swift-protobuf
-      - uses: lukka/run-vcpkg@v7.3
-        with:
-          vcpkgArguments: "protobuf:x64-osx protobuf:arm64-osx"
-          vcpkgDirectory: "/usr/local/share/vcpkg" # todo: use $VCPKG_INSTALLATION_ROOT
-          vcpkgTriplet: "x64-osx"
-          vcpkgGitCommitId: e6dcc079c81161786eb7b052209a2047e79f2c6c
-          cleanAfterBuild: true
-      - uses: lukka/run-cmake@v3.4
-        with:
-          useVcpkgToolchainFile: true
-          cmakeBuildType: "Release"
-          buildDirectory: "${{ github.workspace }}/build"
-          buildWithCMake: true
-          buildWithCMakeArgs: "--config Release --target codegen scone_native"
+          configurePreset: "x64-osx"
+          buildPreset: "x64-osx-debug"
+          testPreset: "x64-osx-debug"

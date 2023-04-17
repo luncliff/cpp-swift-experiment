@@ -1,9 +1,12 @@
 {
-    "name": "cpp-swift-example",
-    "version-string": "1.0.0",
+    "name": "cpp-swift-experiment",
+    "version-string": "1.1",
     "description": "Experiment project for Mac/iPhone library with C++/Swift Programming Language",
     "dependencies": [
         "protobuf",
-        "spdlog"
+        {
+            "name": "protobuf",
+            "host": true
+        }
     ]
 }
