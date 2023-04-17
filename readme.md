@@ -6,18 +6,71 @@
 
 * https://swift.org/package-manager/
 * https://developer.apple.com/documentation/swift_packages
+* https://developer.apple.com/documentation/objectivec/objective-c_runtime?language=objc
 * https://github.com/microsoft/vcpkg/blob/master/docs/specifications/manifests.md
 
 ## How To
 
 ### Setup
 
-(TBA)
+```bash
+pwsh setup-metal-cpp.ps1
+```
 
 ### Build
 
-(TBA)
+#### With Swift Package Manager(SwiftPM)
+
+```bash
+swift build
+swift build --configuration release --target baguette-target
+```
+
+```bash
+# xcodebuild build -workspace . -list
+xcodebuild build -workspace . -derivedDataPath .build -scheme bridging-Package -destination "platform=macOS,arch=x86_64"
+```
+
+#### With CMake, Vcpkg Toolchain
+
+```bash
+export VCPKG_FEATURE_FLAGS="manifests"
+export VCPKG_ROOT="$HOME/../vcpkg"
+```
+
+```
+cmake --preset=x64-osx
+cmake --build --preset=x64-osx-debug
+```
 
 ### Test
 
-(TBA)
+#### With SwiftPM
+
+```bash
+# swift test --list-tests
+swift test
+```
+
+#### With CMake, Vcpkg Toolchain
+
+```
+cmake --build --preset=x64-osx-debug --target baguette_test
+ctest --preset=x64-osx-debug
+```
+
+### Lint
+
+Check https://github.com/realm/SwiftLint
+
+```bash
+swiftlint lint --autocorrect
+swiftlint lint --output docs/lint.md --reporter markdown
+```
+
+### Document
+
+```bash
+xcodebuild docbuild -workspace . -derivedDataPath .build -scheme bridging-Package -destination "platform=macOS"
+find "$(pwd)/.build" -type d -name "*.doccarchive"
+```

@@ -1,8 +1,3 @@
-#
-# References
-#  - https://github.com/lukka/CppBuildTasks-Validation/tree/master/.github/workflows
-#  - https://roseline.oopy.io/dev/github-action-cahce
-#
 name: "Swift: Mac"
 
 on:
