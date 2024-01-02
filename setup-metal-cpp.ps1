@@ -10,10 +10,10 @@
 using namespace System
 param
 (
-    [String]$Folder = "externals"
+    [String]$Folder = "externals",
+    [String]$FileName = "metal-cpp_macOS13_iOS16.zip"
 )
 
-[String]$FileName = "metal-cpp_macOS13_iOS16.zip"
 # Download if not exists
 if ($(Test-Path -Path $FileName) -eq $false) {
     [Uri]$Remote = "https://developer.apple.com/metal/cpp/files/${FileName}"
