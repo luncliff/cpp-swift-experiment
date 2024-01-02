@@ -9,6 +9,10 @@
 
 namespace experiment {
 
+void get_version(uint32_t &output) noexcept {
+  output = 1; // start with 1...
+}
+
 void enum_class_names(FILE *fout) noexcept {
   std::vector<Class> handles{};
   if (int count = objc_getClassList(nullptr, 0); count > 0) {

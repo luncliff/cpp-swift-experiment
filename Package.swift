@@ -63,9 +63,6 @@ let package = Package(
             exclude: [
                 "baguette_test.cpp"
             ],
-            sources: [
-                "TestCase1.swift"
-            ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx)
             ],
