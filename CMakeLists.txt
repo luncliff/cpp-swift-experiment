@@ -6,8 +6,8 @@ include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 20)
 
 if(APPLE)
-    set(CMAKE_Swift_LANGUAGE_VERSION 5.9)
-    find_program(CMAKE_Swift_COMPILER NAMES swiftc swift-frontend REQUIRED)
+    set(CMAKE_Swift_LANGUAGE_VERSION 5)
+    find_program(CMAKE_Swift_COMPILER NAMES swiftc REQUIRED)
     enable_language(Swift)
     # set(CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY  "1,2")
     # if(ENABLE_COVERAGE)
@@ -94,6 +94,11 @@ PRIVATE
 
 install(TARGETS BaguetteBridge FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
+if(NOT BUILD_TESTING)
+    return()
+endif()
+enable_testing()
+
 add_executable(baguette_test
     test/baguette_test.cpp
 )
@@ -116,5 +121,4 @@ PRIVATE
 
 install(TARGETS baguette_test RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-enable_testing()
 add_test(NAME run_baguette_test COMMAND baguette_test WORKING_DIRECTORY ${PROJECT_BINARY_DIR})

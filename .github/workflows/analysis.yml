@@ -13,11 +13,27 @@ jobs:
       - uses: mobiledevops/xcode-select-version-action@v1
         with:
           xcode-select-version: "15.1"
+      - uses: ConorMacBride/install-package@v1.1.0
+        with:
+          brew: ninja
       - uses: SonarSource/sonarcloud-github-c-cpp@v2
 
       - name: "Run setup-metal-cpp.ps1"
         run: ./setup-metal-cpp.ps1
         shell: pwsh
+
+      - uses: lukka/run-vcpkg@v11.4
+        with:
+          vcpkgDirectory: "/usr/local/share/vcpkg" # $VCPKG_INSTALLATION_ROOT
+          vcpkgGitCommitId: c8696863d371ab7f46e213d8f5ca923c4aef2a00 # 2023.12.12
+          vcpkgJsonGlob: "${{ github.workspace }}/vcpkg.json"
+          runVcpkgInstall: true
+      - uses: lukka/run-cmake@v10.7
+        with:
+          configurePreset: "x64-osx-analysis"
+      - name: Run build-wrapper
+        run: |
+          build-wrapper-macosx-x86 --out-dir bw-output cmake --build --preset x64-osx-analysis
 
       - name: "Run xcodebuild(build)"
         run: |
@@ -48,16 +64,26 @@ jobs:
           echo "path=$xcresult_path" >> "$GITHUB_OUTPUT"
           bash ./scripts/xccov-to-sonarqube-generic.sh $xcresult_path > docs/coverage.xml
         shell: bash
-
+        
       - uses: kishikawakatsumi/xcresulttool@v1.7.1
         with:
           path: "${{ steps.xcresult.outputs.path }}"
+
+      - name: "Run xcrun(llvm-cov)"
+        run: |
+          profdata_path=$(find "DerivedData/Build/ProfileData" -name "Coverage.profdata" | tail -n 1)
+          xctest_path="DerivedData/Build/Products/Debug/BaguetteBridgeTests.xctest/Contents/MacOS/BaguetteBridgeTests"
+          xcrun --run llvm-cov show -instr-profile=$profdata_path $xctest_path > docs/coverage.report
+        shell: bash
 
       - name: "Run sonar-scanner"
         run: |
           sonar-scanner \
             --define sonar.links.ci=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \
-            --define sonar.coverageReportPaths=docs/coverage.xml
+            --define sonar.cfamily.llvm-cov.reportPath=docs/coverage.report
+            # --define sonar.swift.coverage.reportPaths=docs/coverage.report
+            # --define sonar.coverageReportPaths=docs/coverage.xml
+            # --define sonar.cfamily.build-wrapper-output="${{ github.workspace }}/bw-output"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

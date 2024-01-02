@@ -7,16 +7,51 @@
     },
     "configurePresets": [
         {
+            "name": "vcpkg-find",
+            "hidden": true,
+            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+            "environment": {
+                "VCPKG_FEATURE_FLAGS": "manifests",
+                "VCPKG_INSTALLED_DIR": "${sourceDir}/externals"
+            },
+            "debug": {
+                "find": true
+            }
+        },
+        {
             "name": "x64-osx",
-            "displayName": "x64-osx",
+            "inherits": [
+                "vcpkg-find"
+            ],
             "generator": "Xcode",
             "binaryDir": "${sourceDir}/build-x64-osx",
             "installDir": "${sourceDir}/install",
-            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
             "cacheVariables": {
+                "BUILD_TESTING": true,
                 "BUILD_SHARED_LIBS": false,
                 "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
                 "CMAKE_OSX_DEPLOYMENT_TARGET": "12.0",
+                "CMAKE_OSX_ARCHITECTURES": "x86_64",
+                "VCPKG_TARGET_TRIPLET": "x64-osx"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            }
+        },
+        {
+            "name": "x64-osx-analysis",
+            "inherits": [
+                "vcpkg-find"
+            ],
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build-x64-analysis",
+            "installDir": "${sourceDir}/install",
+            "cacheVariables": {
+                "BUILD_TESTING": false,
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+                "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_OSX_ARCHITECTURES": "x86_64",
                 "VCPKG_TARGET_TRIPLET": "x64-osx"
             },
@@ -49,6 +84,11 @@
         {
             "name": "x64-osx-debug",
             "configurePreset": "x64-osx",
+            "configuration": "Debug"
+        },
+        {
+            "name": "x64-osx-analysis",
+            "configurePreset": "x64-osx-analysis",
             "configuration": "Debug"
         },
         {
