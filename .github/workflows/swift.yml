@@ -1,4 +1,4 @@
-name: "Swift: Mac"
+name: "Swift"
 
 on:
   push:
@@ -7,16 +7,22 @@ on:
     branches: ["**"]
 
 jobs:
-  swift_test:
-    runs-on: macos-latest
+  swiftpm:
+    runs-on: macos-13
     steps:
-      - uses: actions/checkout@v2
-      # - run: brew install swiftlint
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v1.25.0
+        with:
+          swift-version: "5.9.0"
+      - uses: ConorMacBride/install-package@v1.1.0
+        with:
+          brew: swiftlint
       - name: "Setup Metal-cpp"
         run: |
-          pwsh setup-metal-cpp.ps1
+          ./setup-metal-cpp.ps1
+        shell: pwsh
       - name: "Swift Build(Debug)"
-        run: swift build --verbose --configuration debug # --target ...
+        run: swift build --configuration debug # --verbose --target ...
       - name: "Swift Build(Release)"
         run: swift build --configuration release
       - name: "Swift Test"

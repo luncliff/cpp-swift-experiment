@@ -1,0 +1,61 @@
+name: "Analysis"
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  sonarcloud:
+    name: "SonarCloud"
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: swift-actions/setup-swift@v1.25.0
+        with:
+          swift-version: "5.9.0"
+      - uses: SonarSource/sonarcloud-github-c-cpp@v2
+
+      - name: "Run setup-metal-cpp.ps1"
+        run: ./setup-metal-cpp.ps1
+        shell: pwsh
+
+      - name: "Run xcodebuild(build)"
+        run: |
+          xcodebuild -workspace . -scheme "Baguette-Package" -derivedDataPath DerivedData \
+            -destination "${{ env.DESTINATION }}" -configuration "${{ env.CONFIGURATION }}" \
+            build
+        shell: bash
+        env:
+          DESTINATION: "generic/platform=macOS"
+          CONFIGURATION: "Debug"
+
+      - name: "Run xcodebuild(test)"
+        run: |
+          xcodebuild -workspace . -scheme "Baguette-Package" -derivedDataPath DerivedData \
+            -destination "${{ env.DESTINATION }}" -configuration "${{ env.CONFIGURATION }}" \
+            -enableCodeCoverage YES \
+            test
+        shell: bash
+        env:
+          DESTINATION: "platform=macOS"
+          CONFIGURATION: "Debug"
+
+      - name: "Run xccov-to-sonarqube-generic.sh"
+        id: xcresult
+        run: |
+          xcresult_path=$(find DerivedData/Logs/Test/ -maxdepth 1 -name "Test*.xcresult" | tail -n 1)
+          echo "path=$xcresult_path" >> "$GITHUB_OUTPUT"
+          ./scripts/xccov-to-sonarqube-generic.sh $xcresult_path > docs/coverage.xml
+        shell: bash
+
+      - uses: kishikawakatsumi/xcresulttool@v1.7.1
+        with:
+          path: "${{ steps.xcresult.outputs.path }}"
+
+      - name: "Run sonar-scanner"
+        run: |
+          sonar-scanner \
+            --define sonar.coverageReportPaths=docs/coverage.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

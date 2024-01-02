@@ -1,13 +1,13 @@
 # see https://developer.apple.com/library/archive/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
-cmake_minimum_required(VERSION 3.25)
-project(cpp_swift_bridges LANGUAGES CXX VERSION 1.1)
+cmake_minimum_required(VERSION 3.28)
+project(cpp_swift_bridges LANGUAGES CXX VERSION 1.2)
 
 include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 20)
 
 if(APPLE)
-    set(CMAKE_Swift_LANGUAGE_VERSION 5.5)
-    find_program(CMAKE_Swift_COMPILER NAMES swift-frontend swiftc REQUIRED)
+    set(CMAKE_Swift_LANGUAGE_VERSION 5.9)
+    find_program(CMAKE_Swift_COMPILER NAMES swiftc swift-frontend REQUIRED)
     enable_language(Swift)
     # set(CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY  "1,2")
     # if(ENABLE_COVERAGE)
@@ -39,7 +39,7 @@ find_path(MetalCpp_INCLUDE_DIR
 message(STATUS "using Metal/Metal.hpp: ${MetalCpp_INCLUDE_DIR}")
 
 list(APPEND ifcs
-    src/bridge.hpp
+    src/Baguette.h
 )
 
 # Must be SHARED to keep Swift types' namespace...
