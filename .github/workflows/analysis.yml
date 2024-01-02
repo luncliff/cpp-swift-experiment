@@ -10,9 +10,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: swift-actions/setup-swift@v1.25.0
+      - uses: mobiledevops/xcode-select-version-action@v1
         with:
-          swift-version: "5.9.0"
+          xcode-select-version: "15.1"
       - uses: SonarSource/sonarcloud-github-c-cpp@v2
 
       - name: "Run setup-metal-cpp.ps1"
@@ -21,6 +21,7 @@ jobs:
 
       - name: "Run xcodebuild(build)"
         run: |
+          xcodebuild -workspace . -list
           xcodebuild -workspace . -scheme "Baguette-Package" -derivedDataPath DerivedData \
             -destination "${{ env.DESTINATION }}" -configuration "${{ env.CONFIGURATION }}" \
             build
@@ -45,7 +46,7 @@ jobs:
         run: |
           xcresult_path=$(find DerivedData/Logs/Test/ -maxdepth 1 -name "Test*.xcresult" | tail -n 1)
           echo "path=$xcresult_path" >> "$GITHUB_OUTPUT"
-          ./scripts/xccov-to-sonarqube-generic.sh $xcresult_path > docs/coverage.xml
+          bash ./scripts/xccov-to-sonarqube-generic.sh $xcresult_path > docs/coverage.xml
         shell: bash
 
       - uses: kishikawakatsumi/xcresulttool@v1.7.1
@@ -55,6 +56,7 @@ jobs:
       - name: "Run sonar-scanner"
         run: |
           sonar-scanner \
+            --define sonar.links.ci=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \
             --define sonar.coverageReportPaths=docs/coverage.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

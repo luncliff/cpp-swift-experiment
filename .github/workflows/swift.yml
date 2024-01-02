@@ -11,6 +11,9 @@ jobs:
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
+      - uses: mobiledevops/xcode-select-version-action@v1
+        with:
+          xcode-select-version: "15.0.1"
       - uses: swift-actions/setup-swift@v1.25.0
         with:
           swift-version: "5.9.0"
