@@ -1,6 +1,5 @@
 
-[![CMake](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/cmake.yml/badge.svg)](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/cmake.yml)
-[![Swift](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/swift.yml/badge.svg)](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/swift.yml)
+[![Build](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/build.yml/badge.svg)](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/build.yml)
 
 ### References
 

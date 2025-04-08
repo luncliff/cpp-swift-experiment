@@ -15,7 +15,7 @@ jobs:
           xcode-select-version: "15.2.0"
       - uses: swift-actions/setup-swift@v2
         with:
-          swift-version: "6.0.2"
+          swift-version: "5.9.2"
       - uses: ConorMacBride/install-package@v1.1.0
         with:
           brew: ninja
@@ -25,7 +25,7 @@ jobs:
         shell: pwsh
       - uses: lukka/get-cmake@v4.0.0
         with:
-          cmakeVersion: "~4.0.0"
+          cmakeVersion: "3.31"
       - uses: lukka/run-vcpkg@v11.5
         with:
           vcpkgDirectory: "${{ runner.tool_cache }}/vcpkg"

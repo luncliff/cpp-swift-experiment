@@ -5,38 +5,36 @@ project(cpp_swift_bridges LANGUAGES CXX VERSION 1.3)
 include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 20)
 
+message(STATUS "Using system: ${CMAKE_SYSTEM_VERSION}")
+message(STATUS "Using compiler: ${CMAKE_CXX_COMPILER_ID}")
 if(APPLE)
-    option(CMAKE_Swift_LANGUAGE_VERSION "6" "Swift language version")
+    option(CMAKE_Swift_LANGUAGE_VERSION "5" "Swift language version")
     find_program(CMAKE_Swift_COMPILER NAMES swiftc REQUIRED)
     enable_language(Swift)
+    message(STATUS "Using swiftc: ${CMAKE_Swift_COMPILER}")
+    set(CMAKE_XCODE_ATTRIBUTE_SWIFT_VERSION "5.0")
     # set(CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY  "1,2")
     # if(ENABLE_COVERAGE)
     #     add_compile_options(-Wextra -ftest-coverage -fprofile-arcs)
     #     add_link_options(-ftest-coverage -fprofile-arcs)
     # endif()
 endif()
-message(STATUS "Using system: ${CMAKE_SYSTEM_VERSION}")
-message(STATUS "Using compiler: ${CMAKE_CXX_COMPILER_ID}")
-
-if(CMAKE_TOOLCHAIN_FILE MATCHES vcpkg.cmake)
-    message(STATUS "Using vcpkg: ${VCPKG_TARGET_TRIPLET}")
-endif()
 
 find_library(BORINGSSL_LIBPATH NAMES boringssl REQUIRED)
-message(STATUS "using BoringSSL: ${BORINGSSL_LIBPATH}")
+message(STATUS "Using BoringSSL: ${BORINGSSL_LIBPATH}")
 
-find_program(Protobuf_PROTOC_EXECUTABLE NAMES protoc REQUIRED)
 find_package(Protobuf REQUIRED)
-message(STATUS "Using protoc:")
-message(STATUS "  ${Protobuf_LIBRARY}")
-message(STATUS "  ${Protobuf_PROTOC_EXECUTABLE}")
+if(NOT DEFINED Protobuf_PROTOC_EXECUTABLE)
+    find_program(Protobuf_PROTOC_EXECUTABLE NAMES protoc REQUIRED)
+endif()
+message(STATUS "Using protoc: ${Protobuf_PROTOC_EXECUTABLE}")
 
 find_path(MetalCpp_INCLUDE_DIR
     NAMES "Metal/Metal.hpp"
     PATHS ${PROJECT_SOURCE_DIR}/externals/metal-cpp
     REQUIRED
 )
-message(STATUS "using Metal/Metal.hpp: ${MetalCpp_INCLUDE_DIR}")
+message(STATUS "Using Metal.hpp: ${MetalCpp_INCLUDE_DIR}")
 
 list(APPEND ifcs
     src/Baguette.h
@@ -72,7 +70,7 @@ PUBLIC
 
 target_link_libraries(BaguetteBridge
 PUBLIC
-    "-framework Foundation"
+    "-framework Foundation" "-framework Metal"
     ${BORINGSSL_LIBPATH}
 )
 
