@@ -8,16 +8,20 @@ set(CMAKE_CXX_STANDARD 20)
 message(STATUS "Using system: ${CMAKE_SYSTEM_VERSION}")
 message(STATUS "Using compiler: ${CMAKE_CXX_COMPILER_ID}")
 if(APPLE)
-    option(CMAKE_Swift_LANGUAGE_VERSION "5" "Swift language version")
     find_program(CMAKE_Swift_COMPILER NAMES swiftc REQUIRED)
     enable_language(Swift)
     message(STATUS "Using swiftc: ${CMAKE_Swift_COMPILER}")
-    set(CMAKE_XCODE_ATTRIBUTE_SWIFT_VERSION "5.0")
-    # set(CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY  "1,2")
-    # if(ENABLE_COVERAGE)
-    #     add_compile_options(-Wextra -ftest-coverage -fprofile-arcs)
-    #     add_link_options(-ftest-coverage -fprofile-arcs)
-    # endif()
+
+    set(SWIFT_VERSION "5.0" CACHE STRING "Swift language version. 5.0 or 6.0")
+    if(CMAKE_GENERATOR MATCHES "Xcode")
+        set(CMAKE_XCODE_ATTRIBUTE_SWIFT_VERSION "${SWIFT_VERSION}")
+    elseif(CMAKE_GENERATOR MATCHES "Ninja")
+        # ...
+    endif()
+endif()
+if(ENABLE_COVERAGE)
+    add_compile_options(-Wextra -ftest-coverage -fprofile-arcs)
+    add_link_options(-ftest-coverage -fprofile-arcs)
 endif()
 
 find_library(BORINGSSL_LIBPATH NAMES boringssl REQUIRED)
@@ -74,20 +78,29 @@ PUBLIC
     ${BORINGSSL_LIBPATH}
 )
 
+list(APPEND SWIFT_SRCS
+    platform-apple/AsyncRoutines.swift
+    platform-apple/BaguetteBridge.swift
+    platform-apple/CryptoRoutines.swift
+    platform-apple/DecoderRoutines.swift
+    platform-apple/HostInfo.swift
+)
+set_source_files_properties(${SWIFT_SRCS}
+PROPERTIES
+    LANGUAGE Swift
+    COMPILE_OPTIONS "SHELL:-swift-version ${SWIFT_VERSION}"
+)
+
 target_sources(BaguetteBridge
 PRIVATE
     src/bridge_apple.cpp
+    ${SWIFT_SRCS}
     src/swift_crypto.cpp
     src/swift_crypto.hpp
     src/swift_decoder.cpp
     src/swift_decoder.hpp
     src/swift_hostinfo.hpp
     src/swift_hostinfo.cpp
-    platform-apple/AsyncRoutines.swift
-    platform-apple/BaguetteBridge.swift
-    platform-apple/CryptoRoutines.swift
-    platform-apple/DecoderRoutines.swift
-    platform-apple/HostInfo.swift
 )
 
 install(TARGETS BaguetteBridge FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR})
