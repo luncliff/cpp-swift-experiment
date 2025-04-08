@@ -20,8 +20,8 @@ jobs:
         with:
           brew: ninja
       - uses: SonarSource/sonarcloud-github-c-cpp@v3.2.0
-      - name: "Setup metal-cpp"
-        run: ./setup-metal-cpp.ps1 -Folder "externals" -FileName "metal-cpp_macOS15.2_iOS18.2.zip"
+      - name: "Run setup-metal-cpp.ps1"
+        run: scripts/setup-metal-cpp.ps1 -Folder "externals" -FileName "metal-cpp_macOS15_iOS18.zip"
         shell: pwsh
       - uses: lukka/get-cmake@v4.0.0
         with:

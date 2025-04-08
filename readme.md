@@ -16,8 +16,8 @@
 
 ### Setup
 
-```bash
-pwsh setup-metal-cpp.ps1
+```powershell
+scripts/setup-metal-cpp.ps1 -Folder "externals" -FileName "metal-cpp_macOS15_iOS18.zip"
 ```
 
 ### Build
