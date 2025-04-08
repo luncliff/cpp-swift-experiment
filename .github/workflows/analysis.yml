@@ -12,21 +12,26 @@ jobs:
           fetch-depth: 0
       - uses: mobiledevops/xcode-select-version-action@v1
         with:
-          xcode-select-version: "15.1"
+          xcode-select-version: "15.2.0"
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0.2"
       - uses: ConorMacBride/install-package@v1.1.0
         with:
           brew: ninja
-      - uses: SonarSource/sonarcloud-github-c-cpp@v2
-
-      - name: "Run setup-metal-cpp.ps1"
-        run: ./setup-metal-cpp.ps1
+      - uses: SonarSource/sonarcloud-github-c-cpp@v3.2.0
+      - name: "Setup metal-cpp"
+        run: ./setup-metal-cpp.ps1 -Folder "externals" -FileName "metal-cpp_macOS15.2_iOS18.2.zip"
         shell: pwsh
-
-      - uses: lukka/run-vcpkg@v11.4
+      - uses: lukka/get-cmake@v4.0.0
         with:
-          vcpkgDirectory: "/usr/local/share/vcpkg" # $VCPKG_INSTALLATION_ROOT
-          vcpkgGitCommitId: c8696863d371ab7f46e213d8f5ca923c4aef2a00 # 2023.12.12
-          vcpkgJsonGlob: "${{ github.workspace }}/vcpkg.json"
+          cmakeVersion: "~4.0.0"
+      - uses: lukka/run-vcpkg@v11.5
+        with:
+          vcpkgDirectory: "${{ runner.tool_cache }}/vcpkg"
+          vcpkgGitCommitId: b02e341c927f16d991edbd915d8ea43eac52096c # 2025.03.19
+          vcpkgJsonGlob: "**/vcpkg.json"
+          vcpkgConfigurationJsonGlob: "**/vcpkg-configuration.json"
           runVcpkgInstall: true
       - uses: lukka/run-cmake@v10.7
         with:

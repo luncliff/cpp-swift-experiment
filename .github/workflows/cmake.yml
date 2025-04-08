@@ -8,48 +8,28 @@ on:
   workflow_dispatch:
 
 env:
-  VCPKG_FEATURE_FLAGS: "manifests,binarycaching"
+  VCPKG_FEATURE_FLAGS: "manifests,binarycaching,registries"
 
 jobs:
-  macos12:
-    runs-on: macos-12
-    steps:
-      - uses: actions/checkout@v4
-      - uses: swift-actions/setup-swift@v1.25.0
-        with:
-          swift-version: "5.9.0"
-      - name: "Setup Metal-cpp"
-        run: |
-          ./setup-metal-cpp.ps1 -Folder "externals" -FileName "metal-cpp_macOS13.3_iOS16.4.zip"
-        shell: pwsh
-      - uses: lukka/run-vcpkg@v11.4
-        with:
-          vcpkgDirectory: "/usr/local/share/vcpkg" # $VCPKG_INSTALLATION_ROOT
-          vcpkgGitCommitId: c8696863d371ab7f46e213d8f5ca923c4aef2a00 # 2023.12.12
-          vcpkgJsonGlob: "${{ github.workspace }}/vcpkg.json"
-          runVcpkgInstall: true
-      - uses: lukka/run-cmake@v10.7
-        with:
-          configurePreset: "x64-osx"
-          buildPreset: "x64-osx-debug"
-          testPreset: "x64-osx-debug"
-
   macos13:
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
-      - uses: swift-actions/setup-swift@v1.25.0
+      - uses: swift-actions/setup-swift@v2
         with:
-          swift-version: "5.9.0"
-      - name: "Setup Metal-cpp"
-        run: |
-          ./setup-metal-cpp.ps1 -Folder "externals" -FileName "metal-cpp_macOS14.2_iOS17.2.zip"
+          swift-version: "6.0.2"
+      - name: "Setup metal-cpp"
+        run: ./setup-metal-cpp.ps1 -Folder "externals" -FileName "metal-cpp_macOS15.2_iOS18.2.zip"
         shell: pwsh
-      - uses: lukka/run-vcpkg@v11.4
+      - uses: lukka/get-cmake@v4.0.0
         with:
-          vcpkgDirectory: "/usr/local/share/vcpkg" # $VCPKG_INSTALLATION_ROOT
-          vcpkgGitCommitId: c8696863d371ab7f46e213d8f5ca923c4aef2a00 # 2023.12.12
-          vcpkgJsonGlob: "${{ github.workspace }}/vcpkg.json"
+          cmakeVersion: "~4.0.0"
+      - uses: lukka/run-vcpkg@v11.5
+        with:
+          vcpkgDirectory: "${{ runner.tool_cache }}/vcpkg"
+          vcpkgGitCommitId: b02e341c927f16d991edbd915d8ea43eac52096c # 2025.03.19
+          vcpkgJsonGlob: "**/vcpkg.json"
+          vcpkgConfigurationJsonGlob: "**/vcpkg-configuration.json"
           runVcpkgInstall: true
       - uses: lukka/run-cmake@v10.7
         with:

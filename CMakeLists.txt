@@ -1,12 +1,12 @@
 # see https://developer.apple.com/library/archive/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
-cmake_minimum_required(VERSION 3.28)
-project(cpp_swift_bridges LANGUAGES CXX VERSION 1.2)
+cmake_minimum_required(VERSION 3.31)
+project(cpp_swift_bridges LANGUAGES CXX VERSION 1.3)
 
 include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 20)
 
 if(APPLE)
-    set(CMAKE_Swift_LANGUAGE_VERSION 5)
+    option(CMAKE_Swift_LANGUAGE_VERSION "6" "Swift language version")
     find_program(CMAKE_Swift_COMPILER NAMES swiftc REQUIRED)
     enable_language(Swift)
     # set(CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY  "1,2")
@@ -26,7 +26,7 @@ find_library(BORINGSSL_LIBPATH NAMES boringssl REQUIRED)
 message(STATUS "using BoringSSL: ${BORINGSSL_LIBPATH}")
 
 find_program(Protobuf_PROTOC_EXECUTABLE NAMES protoc REQUIRED)
-find_package(Protobuf CONFIG REQUIRED)
+find_package(Protobuf REQUIRED)
 message(STATUS "Using protoc:")
 message(STATUS "  ${Protobuf_LIBRARY}")
 message(STATUS "  ${Protobuf_PROTOC_EXECUTABLE}")
