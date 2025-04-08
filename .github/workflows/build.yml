@@ -1,0 +1,73 @@
+# References
+#
+# - https://swiftversion.net
+# - https://github.com/actions/runner-images/tree/main/images/macos
+# - https://developer.apple.com/documentation/xcode-release-notes
+#
+name: "Build"
+
+on:
+  push:
+    branches-ignore:
+      - docs
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  swiftpm:
+    name: "Swift Package Manager"
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mobiledevops/xcode-select-version-action@v1
+        with:
+          xcode-select-version: "15.2.0"
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "5.9.2"
+      - uses: ConorMacBride/install-package@v1.1.0
+        with:
+          brew: swiftlint
+      - name: "Run setup-metal-cpp.ps1"
+        run: scripts/setup-metal-cpp.ps1 -Folder "externals" -FileName "metal-cpp_macOS15_iOS18.zip"
+        shell: pwsh
+      - name: "Swift Build(Debug)"
+        run: swift build --configuration debug # --verbose --target ...
+      - name: "Swift Build(Release)"
+        run: swift build --configuration release
+      - name: "Swift Test"
+        run: swift test --verbose --enable-code-coverage
+      - name: "Swift Lint"
+        run: swiftlint lint --output docs/lint.md --reporter markdown # --autocorrect
+
+  cmake:
+    name: "CMake"
+    runs-on: macos-13
+    env:
+      VCPKG_FEATURE_FLAGS: "manifests,binarycaching,registries"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "5.9.2"
+      - name: "Run setup-metal-cpp.ps1"
+        run: scripts/setup-metal-cpp.ps1 -Folder "externals" -FileName "metal-cpp_macOS15_iOS18.zip"
+        shell: pwsh
+      - uses: lukka/get-cmake@v4.0.0
+        with:
+          cmakeVersion: "3.31"
+      - uses: lukka/run-vcpkg@v11.5
+        with:
+          vcpkgDirectory: "${{ runner.tool_cache }}/vcpkg"
+          vcpkgGitCommitId: b02e341c927f16d991edbd915d8ea43eac52096c # 2025.03.19
+          vcpkgJsonGlob: "**/vcpkg.json"
+          vcpkgConfigurationJsonGlob: "**/vcpkg-configuration.json"
+          runVcpkgInstall: true
+      - uses: lukka/run-cmake@v10.7
+        with:
+          configurePreset: "x64-osx"
+          buildPreset: "x64-osx-debug"
+          testPreset: "x64-osx-debug"

@@ -1,6 +1,16 @@
 name: "Analysis"
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches-ignore:
+      - docs
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   sonarcloud:
@@ -12,21 +22,29 @@ jobs:
           fetch-depth: 0
       - uses: mobiledevops/xcode-select-version-action@v1
         with:
-          xcode-select-version: "15.1"
+          xcode-select-version: "15.2.0"
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "5.9.2"
       - uses: ConorMacBride/install-package@v1.1.0
         with:
           brew: ninja
-      - uses: SonarSource/sonarcloud-github-c-cpp@v2
+      - uses: SonarSource/sonarcloud-github-c-cpp@v3.2.0
 
       - name: "Run setup-metal-cpp.ps1"
-        run: ./setup-metal-cpp.ps1
+        run: scripts/setup-metal-cpp.ps1 -Folder "externals" -FileName "metal-cpp_macOS15_iOS18.zip"
         shell: pwsh
 
-      - uses: lukka/run-vcpkg@v11.4
+      - uses: lukka/get-cmake@v4.0.0
         with:
-          vcpkgDirectory: "/usr/local/share/vcpkg" # $VCPKG_INSTALLATION_ROOT
-          vcpkgGitCommitId: c8696863d371ab7f46e213d8f5ca923c4aef2a00 # 2023.12.12
-          vcpkgJsonGlob: "${{ github.workspace }}/vcpkg.json"
+          cmakeVersion: "3.31"
+
+      - uses: lukka/run-vcpkg@v11.5
+        with:
+          vcpkgDirectory: "${{ runner.tool_cache }}/vcpkg"
+          vcpkgGitCommitId: b02e341c927f16d991edbd915d8ea43eac52096c # 2025.03.19
+          vcpkgJsonGlob: "**/vcpkg.json"
+          vcpkgConfigurationJsonGlob: "**/vcpkg-configuration.json"
           runVcpkgInstall: true
       - uses: lukka/run-cmake@v10.7
         with:
@@ -60,14 +78,17 @@ jobs:
       - name: "Run xccov-to-sonarqube-generic.sh"
         id: xcresult
         run: |
+          # xcrun --show-sdk-path
           xcresult_path=$(find DerivedData/Logs/Test/ -maxdepth 1 -name "Test*.xcresult" | tail -n 1)
-          echo "path=$xcresult_path" >> "$GITHUB_OUTPUT"
+          echo "path=$(pwd)/xcresult_path" >> "$GITHUB_OUTPUT"
           bash ./scripts/xccov-to-sonarqube-generic.sh $xcresult_path > docs/coverage.xml
         shell: bash
 
       - uses: kishikawakatsumi/xcresulttool@v1.7.1
+        continue-on-error: true
         with:
           path: "${{ steps.xcresult.outputs.path }}"
+          upload-bundles: 'failure'
 
       - name: "Run xcrun(llvm-cov)"
         run: |

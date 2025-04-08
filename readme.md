@@ -1,6 +1,5 @@
 
-[![CMake](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/cmake.yml/badge.svg)](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/cmake.yml)
-[![Swift](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/swift.yml/badge.svg)](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/swift.yml)
+[![Build](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/build.yml/badge.svg)](https://github.com/luncliff/cpp-swift-experiment/actions/workflows/build.yml)
 
 ### References
 
@@ -16,8 +15,8 @@
 
 ### Setup
 
-```bash
-pwsh setup-metal-cpp.ps1
+```powershell
+scripts/setup-metal-cpp.ps1 -Folder "externals" -FileName "metal-cpp_macOS15_iOS18.zip"
 ```
 
 ### Build

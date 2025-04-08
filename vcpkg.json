@@ -1,12 +1,16 @@
 {
-    "name": "cpp-swift-experiment",
-    "version-string": "1.1",
-    "description": "Experiment project for Mac/iPhone library with C++/Swift Programming Language",
-    "dependencies": [
-        "protobuf",
-        {
-            "name": "protobuf",
-            "host": true
-        }
-    ]
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "cpp-swift-experiment",
+  "version-date": "2025-04-08",
+  "description": "Experiment project for Mac/iPhone library with C++/Swift Programming Language",
+  "homepage": "https://github.com/luncliff/cpp-swift-experiment",
+  "license": "CC0-1.0",
+  "supports": "osx | ios",
+  "dependencies": [
+    "protobuf",
+    {
+      "name": "protobuf",
+      "host": true
+    }
+  ]
 }
